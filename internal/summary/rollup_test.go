@@ -70,6 +70,13 @@ func TestRollup_Sorted(t *testing.T) {
 	}
 }
 
+func TestRollup_Empty(t *testing.T) {
+	summaries := Rollup([]drift.DetectResult{})
+	if len(summaries) != 0 {
+		t.Errorf("expected 0 summaries for empty input, got %d", len(summaries))
+	}
+}
+
 func TestWriteRollup_Output(t *testing.T) {
 	summaries := []ContainerSummary{
 		{Name: "web", Drifted: true, ImageDrift: true, EnvDrifts: 1, LabelDrifts: 0, Total: 2},
