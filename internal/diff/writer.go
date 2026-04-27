@@ -9,12 +9,15 @@ import (
 )
 
 // Write renders highlighted diffs for all results to w in the given format.
+// Supported formats are "json" and "text" (default).
 func Write(w io.Writer, results []drift.Result, format string) error {
 	switch format {
 	case "json":
 		return writeJSON(w, results)
-	default:
+	case "text", "":
 		return writeText(w, results)
+	default:
+		return fmt.Errorf("unsupported format %q: must be \"text\" or \"json\"", format)
 	}
 }
 
@@ -35,7 +38,7 @@ type jsonDiff struct {
 }
 
 func writeJSON(w io.Writer, results []drift.Result) error {
-	var out []jsonDiff
+	out := make([]jsonDiff, 0, len(results))
 	for _, r := range results {
 		out = append(out, jsonDiff{
 			Name:    r.Name,
