@@ -70,6 +70,28 @@ func TestBuildTrend_SortedByRateDesc(t *testing.T) {
 	}
 }
 
+// TestBuildTrend_SingleSnapshot verifies that a single snapshot is handled
+// correctly, with Total=1 and Rate reflecting whether the service drifted.
+func TestBuildTrend_SingleSnapshot(t *testing.T) {
+	snaps := [][]drift.Result{
+		makeSnap([]string{"cache"}, []bool{true}),
+	}
+	report := BuildTrend(snaps)
+	if len(report.Entries) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(report.Entries))
+	}
+	e := report.Entries[0]
+	if e.Total != 1 {
+		t.Errorf("expected Total=1, got %d", e.Total)
+	}
+	if e.DriftCount != 1 {
+		t.Errorf("expected DriftCount=1, got %d", e.DriftCount)
+	}
+	if e.Rate != 100.0 {
+		t.Errorf("expected Rate=100.0, got %.1f", e.Rate)
+	}
+}
+
 func TestWriteTrendReport_Output(t *testing.T) {
 	snaps := [][]drift.Result{
 		makeSnap([]string{"svc"}, []bool{true}),
