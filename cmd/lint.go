@@ -40,10 +40,7 @@ func runLint(manifestPath string, failOnWarning bool) error {
 		return nil
 	}
 
-	for _, f := range report.Findings {
-		icon := severityIcon(f.Severity)
-		fmt.Fprintf(os.Stdout, "%s [%s] %s — %s\n", icon, f.Severity, f.Container, f.Message)
-	}
+	printFindings(report)
 
 	fmt.Fprintf(os.Stdout, "\nsummary: %d error(s), %d warning(s)\n",
 		report.ErrorCount, report.WarningCount)
@@ -55,6 +52,14 @@ func runLint(manifestPath string, failOnWarning bool) error {
 		return fmt.Errorf("lint failed with %d warning(s)", report.WarningCount)
 	}
 	return nil
+}
+
+// printFindings writes each lint finding to stdout with an icon indicating severity.
+func printFindings(report lint.Report) {
+	for _, f := range report.Findings {
+		icon := severityIcon(f.Severity)
+		fmt.Fprintf(os.Stdout, "%s [%s] %s — %s\n", icon, f.Severity, f.Container, f.Message)
+	}
 }
 
 func severityIcon(s lint.Severity) string {
